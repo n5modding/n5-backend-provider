@@ -1,39 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>n5 Modding Redeem</title>
-<link rel="icon" href="logo.png">
-<style>
-  body { font-family: sans-serif; background:#121212; color:#f0f0f0; text-align:center; padding:50px; }
-  h1 { color:#ffd700; }
-  input, button { padding:10px; border-radius:5px; border:none; }
-  input { width:200px; margin-right:10px; }
-  button { background:#ffd700; color:#121212; cursor:pointer; }
-  #message { margin-top:20px; font-weight:bold; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modding N5</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<img src="logo.png" alt="n5 Logo" width="100">
-<h1>Redeem Your Unique Code</h1>
-<input type="text" id="code" placeholder="Enter Code">
-<button onclick="redeem()">Redeem</button>
-<div id="message"></div>
-<script>
-async function redeem() {
-  const code = document.getElementById("code").value;
-  const discord_id = prompt("Enter your Discord ID:");
-  const roblox_id = prompt("Enter your Roblox ID:");
-  if(!code || !discord_id || !roblox_id) return;
-  const response = await fetch("/api/redeem", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ code, discord_id, roblox_id })
-  });
-  const data = await response.json();
-  document.getElementById("message").textContent = data.message || data.error;
-}
-</script>
+<body class="bg-gray-900 text-white font-sans">
+    <!-- Header -->
+    <header class="bg-gray-800 py-4">
+        <div class="container mx-auto flex items-center justify-between px-4">
+            <div class="flex items-center">
+                <img src="logo.png" alt="Modding N5 Logo" class="h-12 mr-4">
+                <h1 class="text-2xl font-bold">Modding N5</h1>
+            </div>
+            <nav>
+                <a href="#home" class="mx-2 hover:text-blue-400">Home</a>
+                <a href="#features" class="mx-2 hover:text-blue-400">Features</a>
+                <a href="#link" class="mx-2 hover:text-blue-400">Link Account</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section id="home" class="py-20 text-center bg-gradient-to-b from-gray-800 to-gray-900">
+        <div class="container mx-auto px-4">
+            <h2 class="text-4xl font-bold mb-4">Welcome to Modding N5</h2>
+            <p class="text-lg mb-6">Enhance your gaming experience with exclusive mods and features!</p>
+            <a href="#link" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded">Link Your Account</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 bg-gray-900">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Our Features</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature Card 1 -->
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold mb-2">Exclusive Mods</h3>
+                    <p>Access unique mods to enhance your gameplay on Roblox.</p>
+                </div>
+                <!-- Feature Card 2 -->
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold mb-2">Supporter Perks</h3>
+                    <p>Unlock special roles and rewards with your Supporter role.</p>
+                </div>
+                <!-- Feature Card 3 -->
+                <div class="bg-gray-800 p-6 rounded-lg shadow-lg">
+                    <h3 class="text-xl font-semibold mb-2">Community Support</h3>
+                    <p>Join our Discord for updates and community events.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Link Account Section -->
+    <section id="link" class="py-16 bg-gray-800">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-3xl font-bold mb-6">Link Your Discord Account</h2>
+            <p class="mb-4">Enter your code to link your Discord account and unlock exclusive features!</p>
+            <div class="max-w-md mx-auto">
+                <input id="codeInput" type="text" placeholder="Enter your code" class="w-full p-2 mb-4 bg-gray-700 rounded text-white">
+                <button onclick="redeemCode()" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded">Redeem Code</button>
+                <p id="message" class="mt-4 text-red-400 hidden">Invalid or expired code.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 py-4 text-center">
+        <p>&copy; 2025 Modding N5. All rights reserved.</p>
+    </footer>
+
+    <script>
+        async function redeemCode() {
+            const code = document.getElementById('codeInput').value;
+            const message = document.getElementById('message');
+            try {
+                const response = await fetch('https://your-render-backend.onrender.com/redeem', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    document.cookie = `access_token=${result.token}; path=/; max-age=3600`;
+                    message.textContent = 'Code redeemed! Account linked successfully.';
+                    message.classList.remove('text-red-400', 'hidden');
+                    message.classList.add('text-green-400');
+                } else {
+                    message.textContent = result.message || 'Invalid or expired code.';
+                    message.classList.remove('hidden');
+                }
+            } catch (error) {
+                message.textContent = 'Error redeeming code. Try again later.';
+                message.classList.remove('hidden');
+            }
+       VARCHAR
+
+    </script>
 </body>
 </html>
